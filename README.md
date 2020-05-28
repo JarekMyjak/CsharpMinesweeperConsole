@@ -3,7 +3,7 @@ Console minesweeper implementaion with some quirks for fun
 
 ## TODO
  - [ ] Menu System
- - [ ] Game Logic
+ - [x] Game Logic
  - [x] Game GUI
  - [ ] Game Timer
 

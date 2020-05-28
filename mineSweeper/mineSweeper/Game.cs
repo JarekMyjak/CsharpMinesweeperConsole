@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Linq;
+
 
 namespace mineSweeper
 {
@@ -14,32 +14,45 @@ namespace mineSweeper
             won,
         }
 
-        int sizex = 10;
-        int sizey = 10;
-        int bombNum = 10;
+        const int tileSize = 3;
+        GameState State = GameState.running;
         int cursorPosx = 0;
         int cursorPosy = 0;
+        Board board = new Board(8,8,10);
+/*
+        int sizex = 8;
+        int sizey = 8;
+        int bombNum = 10;
         const int tileSize = 3;
-        Tile[,] board;
-        GameState State = GameState.running;
+        //Tile[,] board;
+        int revealedCount = 0;
+        int freeTiles;*/
+        
 
-        Random R = new Random();
 
 
         public Game()
         {
             Console.Clear();
             Console.CursorVisible = false;
-            board = InitializeBoard(sizex, sizey, bombNum);
 
             //while gra sie toczy
             while (State == GameState.running)
             {
-                displayBoard();
+                board.displayBoard();
                 displayCursor();
                 handleKeypress();
+                if (board.revealedCount >= board.freeTiles)
+                {
+                    State = GameState.won;
+                } else if (board.blown)
+                {
+                    State = GameState.lost;
+                }
             }
+            Console.WriteLine(State.ToString());
 
+            Console.ReadLine();
         }
 
         private void handleKeypress()
@@ -50,93 +63,31 @@ namespace mineSweeper
             {
                 case "LeftArrow":
                 case "A":
-                    cursorPosx = Math.Clamp(cursorPosx - 1, 0, sizex-1);
+                    cursorPosx = Math.Clamp(cursorPosx - 1, 0, board.sizex - 1);
                     break;
                 case "RightArrow":
                 case "D":
-                    cursorPosx = Math.Clamp(cursorPosx + 1, 0, sizex-1);
+                    cursorPosx = Math.Clamp(cursorPosx + 1, 0, board.sizex - 1);
                     break;
                 case "UpArrow":
                 case "W":
-                    cursorPosy = Math.Clamp(cursorPosy + 1, 0, sizey - 1);
+                    cursorPosy = Math.Clamp(cursorPosy - 1, 0, board.sizey - 1);
                     break;
                 case "DownArrow":
                 case "S":
-                    cursorPosy = Math.Clamp(cursorPosy + 1, 0, sizey - 1);
+                    cursorPosy = Math.Clamp(cursorPosy + 1, 0, board.sizey - 1);
+                    break;
+                case "Enter":
+                    board.revealTile(cursorPosx, cursorPosy);
+                    break;
+                case "F":
+                    board.flagTile(cursorPosx, cursorPosy);
                     break;
                 default:
                     break;
             }
         }
 
-        private Tile[,] InitializeBoard(int sizex, int sizey, int bombNum)
-        {
-            //initialize all tiles empty
-            Tile[,] t = new Tile[sizex, sizey];
-            for (int i = 0; i < sizex; i++)
-            {
-                for (int j = 0; j < sizey; j++)
-                {
-                    t[i,j] = new Tile(i, j);
-                }
-            }
-
-            //add bombs
-            int bombIndex = 0;
-            while (bombIndex < bombNum)
-            {
-                int tx = R.Next(sizex);
-                int ty = R.Next(sizey);
-                
-                if (!t[tx,ty].bomb)
-                {
-                    t[tx, ty].bomb = true;
-                    bombIndex++;
-                }
-            }
-
-            //initialize neighbor counts, not really proud of implementation, but works!
-            for (int i = 0; i < sizex; i++)
-            {
-                for (int j = 0; j < sizey; j++)
-                {
-                    int neighbourCount = 0;
-
-                    for (int xOffset= -1; xOffset <= 1; xOffset++)
-                    {
-                        for (int yOffset = -1; yOffset <= 1; yOffset++)
-                        {
-                            if (!(xOffset == 0 && yOffset == 0))
-                            {
-                                Tile neighbor = null;
-
-                                try { neighbor = t[i + xOffset, j + yOffset]; } catch (Exception) { }
-
-                                if (neighbor != null)
-                                {
-                                    neighbourCount += neighbor.bomb ? 1 : 0;
-                                }
-                            }
-                        }
-                    }
-                    t[i, j].neighborNumber = neighbourCount;
-                }
-            }
-
-            return t;
-        }
-
-        public void displayBoard()
-        {
-            for (int i = 0; i < sizex; i++)
-            {
-                for (int j = 0; j < sizey; j++)
-                {
-                    board[i,j].display();
-
-                }
-            }
-        }
 
         public void displayCursor()
         {
