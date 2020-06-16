@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 
@@ -21,20 +22,11 @@ namespace mineSweeper
         int cursorPosy = 0;
         Board board;
         bool sound;
-/*
-        int sizex = 8;
-        int sizey = 8;
-        int bombNum = 10;
-        const int tileSize = 3;
-        //Tile[,] board;
-        int revealedCount = 0;
-        int freeTiles;*/
-        
-
-
+        Stopwatch stopWatch = new Stopwatch();
 
         public Game(int width, int height, int bombNum, bool sound)
         {
+
             this.sound = sound;
             Console.SetWindowSize(width * tileSize, height * tileSize);
             Console.SetBufferSize(width * tileSize, height * tileSize);
@@ -43,33 +35,34 @@ namespace mineSweeper
             Console.Clear();
             Console.CursorVisible = false;
 
-            //while gra sie toczy
             while (State == GameState.running)
             {
                 board.displayBoard();
                 displayCursor();
                 handleKeypress();
-                
+
                 if (board.revealedCount >= board.freeTiles)
                 {
                     State = GameState.won;
                     board.revealBoard();
-                } else if (board.blown)
+                }
+                else if (board.blown)
                 {
                     State = GameState.lost;
                     board.revealBoard();
                 }
             }
+            stopWatch.Stop();
             Console.BufferHeight = Console.BufferHeight + 3;
             Console.WindowHeight = Console.WindowHeight + 3;
-            Console.SetCursorPosition(0,Console.BufferHeight-2);
+            Console.SetCursorPosition(0, Console.BufferHeight - 2);
             switch (State)
             {
                 case GameState.lost:
-                    Console.WriteLine("Przegrana :(");
+                    Console.WriteLine("Przegrana :( czas: " + (int)stopWatch.Elapsed.TotalSeconds + "s");
                     break;
                 case GameState.won:
-                    Console.WriteLine("Wygrana \u263B");
+                    Console.WriteLine("Wygrana \u263B czas: " + (int)stopWatch.Elapsed.TotalSeconds + "s");
                     break;
             }
             Console.ReadKey();
@@ -80,7 +73,7 @@ namespace mineSweeper
         {
 
             string keyPressed = Console.ReadKey(true).Key.ToString();
-            
+
             switch (keyPressed)
             {
                 case "LeftArrow":
@@ -100,24 +93,24 @@ namespace mineSweeper
                     cursorPosy = Math.Clamp(cursorPosy + 1, 0, board.sizey - 1);
                     break;
                 case "Enter":
-                case "Q":
                 case "Spacebar":
                     if (sound) Console.Beep(440, 100);
                     board.revealTile(cursorPosx, cursorPosy);
-                    
-                    
+                    if (!stopWatch.IsRunning)
+                    {
+                        stopWatch.Start();
+                    }
+
                     break;
                 case "F":
-                case "ALT":
                     board.flagTile(cursorPosx, cursorPosy);
                     break;
                 default:
                     break;
 
             }
-            
-        }
 
+        }
 
         public void displayCursor()
         {
@@ -127,7 +120,7 @@ namespace mineSweeper
             Console.Write("║");
             Console.SetCursorPosition(cursorPosx * tileSize + 2, cursorPosy * tileSize + 1);
             Console.Write("║");
-            Console.SetCursorPosition(cursorPosx * tileSize , cursorPosy * tileSize + 2);
+            Console.SetCursorPosition(cursorPosx * tileSize, cursorPosy * tileSize + 2);
             Console.Write("╚═╝");
 
         }

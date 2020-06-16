@@ -169,6 +169,7 @@ namespace mineSweeper
             {
                 boardArr = InitializeBoard(sizex, sizey, bombNum, x, y);
                 bombsGenerated = true;
+                
             }
 
             Tile tile = boardArr[x, y];
