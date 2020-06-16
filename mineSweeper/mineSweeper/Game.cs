@@ -7,18 +7,20 @@ namespace mineSweeper
 {
     class Game
     {
-        enum GameState
+        public enum GameState
         {
             running,
             lost,
             won,
+            completed
         }
 
         const int tileSize = 3;
-        GameState State = GameState.running;
+        public GameState State = GameState.running;
         int cursorPosx = 0;
         int cursorPosy = 0;
-        Board board = new Board(8,8,10);
+        Board board;
+        bool sound;
 /*
         int sizex = 8;
         int sizey = 8;
@@ -31,8 +33,13 @@ namespace mineSweeper
 
 
 
-        public Game()
+        public Game(int width, int height, int bombNum, bool sound)
         {
+            this.sound = sound;
+            Console.SetWindowSize(width * tileSize, height * tileSize);
+            Console.SetBufferSize(width * tileSize, height * tileSize);
+            board = new Board(width, height, bombNum);
+
             Console.Clear();
             Console.CursorVisible = false;
 
@@ -42,23 +49,38 @@ namespace mineSweeper
                 board.displayBoard();
                 displayCursor();
                 handleKeypress();
+                
                 if (board.revealedCount >= board.freeTiles)
                 {
                     State = GameState.won;
+                    board.revealBoard();
                 } else if (board.blown)
                 {
                     State = GameState.lost;
+                    board.revealBoard();
                 }
             }
-            Console.WriteLine(State.ToString());
-
-            Console.ReadLine();
+            Console.BufferHeight = Console.BufferHeight + 3;
+            Console.WindowHeight = Console.WindowHeight + 3;
+            Console.SetCursorPosition(0,Console.BufferHeight-2);
+            switch (State)
+            {
+                case GameState.lost:
+                    Console.WriteLine("Przegrana :(");
+                    break;
+                case GameState.won:
+                    Console.WriteLine("Wygrana \u263B");
+                    break;
+            }
+            Console.ReadKey();
+            State = GameState.completed;
         }
 
         private void handleKeypress()
         {
 
             string keyPressed = Console.ReadKey(true).Key.ToString();
+            
             switch (keyPressed)
             {
                 case "LeftArrow":
@@ -78,14 +100,22 @@ namespace mineSweeper
                     cursorPosy = Math.Clamp(cursorPosy + 1, 0, board.sizey - 1);
                     break;
                 case "Enter":
+                case "Q":
+                case "Spacebar":
+                    if (sound) Console.Beep(440, 100);
                     board.revealTile(cursorPosx, cursorPosy);
+                    
+                    
                     break;
                 case "F":
+                case "ALT":
                     board.flagTile(cursorPosx, cursorPosy);
                     break;
                 default:
                     break;
+
             }
+            
         }
 
 

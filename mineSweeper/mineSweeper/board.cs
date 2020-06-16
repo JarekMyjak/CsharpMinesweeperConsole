@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
 
 namespace mineSweeper
 {
@@ -16,17 +16,32 @@ namespace mineSweeper
         public int revealedCount = 0;
         public int freeTiles;
         public bool blown = false;
+        public bool bombsGenerated = false;
 
         public Board(int sizeX, int sizeY, int bombNumber)
         {
             sizex = sizeX;
             sizey = sizeY;
             bombNum = bombNumber;
-            boardArr = InitializeBoard(sizex, sizey, bombNum);
+            boardArr = InitializeBoard(sizex, sizey);
             freeTiles = (sizex * sizey) - bombNum;
         }
 
-        private Tile[,] InitializeBoard(int sizex, int sizey, int bombNum)
+        private Tile[,] InitializeBoard(int sizex, int sizey)
+        {
+            //Initialize empty board
+            Tile[,] t = new Tile[sizex, sizey];
+            for (int i = 0; i < sizex; i++)
+            {
+                for (int j = 0; j < sizey; j++)
+                {
+                    t[i, j] = new Tile(i, j);
+                }
+            }
+            return t;
+        }
+
+        private Tile[,] InitializeBoard(int sizex, int sizey, int bombNum, int startX, int startY)
         {
             //initialize all tiles empty
             Tile[,] t = new Tile[sizex, sizey];
@@ -45,7 +60,11 @@ namespace mineSweeper
             {
                 for (int j = 0; j < sizey; j++)
                 {
-                    bombPosibilities.Add(new Tile(i, j));
+                    if (!(i == startX && j == startY))
+                    {
+                        bombPosibilities.Add(new Tile(i, j));
+                    }
+                    
                 }
             }
 
@@ -94,6 +113,7 @@ namespace mineSweeper
 
         public void displayBoard()
         {
+            
             for (int i = 0; i < sizex; i++)
             {
                 for (int j = 0; j < sizey; j++)
@@ -104,6 +124,19 @@ namespace mineSweeper
             }
         }
 
+        public void revealBoard()
+        {
+
+            for (int i = 0; i < sizex; i++)
+            {
+                for (int j = 0; j < sizey; j++)
+                {
+                    boardArr[i, j].reveal();
+                    boardArr[i, j].display();
+
+                }
+            }
+        }
         public void displayCursor(int x, int y)
         {
             Console.SetCursorPosition(x * tileSize, y * tileSize);
@@ -129,6 +162,15 @@ namespace mineSweeper
 
         public void revealTile(int x, int y)
         {
+            // first make sure that bombs are generated;
+            // if not generate bombs without the field we checked
+
+            if (!bombsGenerated)
+            {
+                boardArr = InitializeBoard(sizex, sizey, bombNum, x, y);
+                bombsGenerated = true;
+            }
+
             Tile tile = boardArr[x, y];
             int neighborNumber = tile.neighborNumber;
             if (tile.bomb)

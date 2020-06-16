@@ -12,7 +12,6 @@ namespace mineSweeper
         public bool bomb = false;
         public bool flaged = false;
         const int tileSize = 3;
-
         public int neighborNumber = 0;
 
         public Tile(int x, int y)
@@ -21,34 +20,33 @@ namespace mineSweeper
             ypos = y;
         }
 
-        public int reveal()
-        {
-            revealed = true;
-            return neighborNumber;
-        }
+        public void reveal() { revealed = true; }
 
         public void display()
         {
-            if (revealed)
+            switch (revealed)
             {
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize);
-                Console.Write("   ");
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 1);
-                Console.Write(" ");
-                Console.Write(neighborNumber == 0 ? " " : neighborNumber.ToString());
-                Console.Write(" ");
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 2);
-                Console.Write("   ");
-            } else
-            {
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize);
-                Console.Write("┌─┐");
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 1);
-                Console.Write("│" + " " + "│");
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 2);
-                Console.Write("└─┘");
-                
+                case true:
+                    Console.SetCursorPosition(xpos * tileSize, ypos * tileSize);
+                    Console.Write("   ");
+                    Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 1);
+                    Console.Write(" ");
+                    Console.Write(neighborNumber == 0 ? " " : neighborNumber.ToString());
+                    Console.Write(" ");
+                    Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 2);
+                    Console.Write("   ");
+                    break;
+                case false:
+                    Console.SetCursorPosition(xpos * tileSize, ypos * tileSize);
+                    Console.Write("┌─┐");
+                    Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 1);
+                    Console.Write("│" + " " + "│");
+                    Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 2);
+                    Console.Write("└─┘");
+                    break;
             }
+
+
             if (flaged)
             {
                 Console.SetCursorPosition(xpos * tileSize, ypos * tileSize);
@@ -58,7 +56,8 @@ namespace mineSweeper
                 Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 2);
                 Console.Write("└─┘");
             }
-            /*if (bomb)
+
+            if (bomb && revealed)
             {
                 Console.SetCursorPosition(xpos * tileSize, ypos * tileSize);
                 Console.Write("┌─┐");
@@ -66,7 +65,7 @@ namespace mineSweeper
                 Console.Write("│" + "B" + "│");
                 Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 2);
                 Console.Write("└─┘");
-            }*/
+            }
         }
     }
 }

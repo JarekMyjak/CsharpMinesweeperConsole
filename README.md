@@ -2,11 +2,11 @@
 Console minesweeper implementaion with some quirks for fun
 
 ## TODO
- - [ ] Menu System
+ - [x] Menu System
  - [x] Game Logic
  - [x] Game GUI
  - [ ] Game Timer
 
 ## Aditional ideas
- - [ ] Sounds
+ - [x] Sounds
  - [ ] Highest Scores
