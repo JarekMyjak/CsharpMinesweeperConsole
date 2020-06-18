@@ -137,18 +137,6 @@ namespace mineSweeper
                 }
             }
         }
-        public void displayCursor(int x, int y)
-        {
-            Console.SetCursorPosition(x * tileSize, y * tileSize);
-            Console.Write("╔═╗");
-            Console.SetCursorPosition(x * tileSize, (y * y) + 1);
-            Console.Write("║");
-            Console.SetCursorPosition(x * tileSize + 2, y * tileSize + 1);
-            Console.Write("║");
-            Console.SetCursorPosition(x * tileSize, y * tileSize + 2);
-            Console.Write("╚═╝");
-
-        }
 
         public void flagTile(int x, int y)
         {

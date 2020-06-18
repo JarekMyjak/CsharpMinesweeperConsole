@@ -49,12 +49,10 @@ namespace mineSweeper
 
             if (flaged)
             {
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize);
-                Console.Write("┌─┐");
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 1);
-                Console.Write("│" + "F" + "│");
-                Console.SetCursorPosition(xpos * tileSize, ypos * tileSize + 2);
-                Console.Write("└─┘");
+
+                Console.SetCursorPosition(xpos * tileSize + 1, ypos * tileSize + 1);
+                Console.Write("F");
+
             }
 
             if (bomb && revealed)
